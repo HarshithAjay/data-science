@@ -1,0 +1,45 @@
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import folium
+from folium.plugins import HeatMap
+
+# Load dataset (Replace 'accidents.csv' with actual file)
+df = pd.read_csv("accidents.csv")
+
+# Convert timestamp to datetime
+df["timestamp"] = pd.to_datetime(df["timestamp"])
+df["hour"] = df["timestamp"].dt.hour
+df["day_of_week"] = df["timestamp"].dt.day_name()
+
+# Plot Accident Frequency by Hour
+plt.figure(figsize=(10, 5))
+sns.countplot(x=df["hour"], palette="coolwarm")
+plt.title("Accident Frequency by Hour of Day")
+plt.xlabel("Hour")
+plt.ylabel("Number of Accidents")
+plt.show()
+
+# Plot Accidents by Weather Condition
+plt.figure(figsize=(8, 5))
+sns.countplot(y=df["weather_condition"], order=df["weather_condition"].value_counts().index, palette="pastel")
+plt.title("Accidents by Weather Condition")
+plt.xlabel("Count")
+plt.ylabel("Weather Condition")
+plt.show()
+
+# Plot Accidents by Road Condition
+plt.figure(figsize=(8, 5))
+sns.countplot(y=df["road_condition"], order=df["road_condition"].value_counts().index, palette="pastel")
+plt.title("Accidents by Road Condition")
+plt.xlabel("Count")
+plt.ylabel("Road Condition")
+plt.show()
+
+# Create Heatmap of Accident Hotspots
+m = folium.Map(location=[df["latitude"].mean(), df["longitude"].mean()], zoom_start=10)
+heat_data = list(zip(df["latitude"], df["longitude"]))
+HeatMap(heat_data).add_to(m)
+
+# Show Map
+m
